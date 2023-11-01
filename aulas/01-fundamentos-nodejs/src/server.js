@@ -14,11 +14,11 @@ const server = http.createServer(async (req, res) => {
 
     return res.end(JSON.stringify(users));
   }
-  
+
   if (method === "POST" && url === "/users") {
-    const { name, email, numero } = req.body;
+    const { name, email } = req.body;
     const user ={
-      id: 1,
+      id:1,
       name,
       email,
     };
