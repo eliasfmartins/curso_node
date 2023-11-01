@@ -1,20 +1,25 @@
 import http from "node:http";
 import { json } from "./middlewares/json.js";
 import { routes } from "./middlewares/routes.js";
+import { extractQueryParams } from "./utils/extract-query-params.js";
 
 const server = http.createServer(async (req, res) => {
   const { method, url } = req;
 
   await json(req, res);
   const route = routes.find((route) => {
-    return route.method === method && route.path.test(url)
+    return route.method === method && route.path.test(url);
   });
-  if(route){
+  if (route) {
     const routeParams = req.url.match(route.path)
-    req.params ={ ...routeParams.groups}
-   return route.handle(req, res)
+
+    const { query, ...params } = routeParams.groups;
+
+    req.params = params;
+    req.query = query ? extractQueryParams(query) : {};
+    return route.handle(req, res);
   }
-  console.log(route)
+  console.log(route);
   return res.writeHead(404).end("Not found");
 });
 server.listen(3333);
